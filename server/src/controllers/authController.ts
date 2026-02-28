@@ -4,7 +4,7 @@ import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db from '../database/connection.js';
-const JWT_SECRET = process.env.JWT_SECRET || 'hrms-secret-key-2026';
+const jwtSecret = 'dcc1592ab594e2fca9564483c37df5816cd40e25ec2d2d09dedb4614a9be27339818c6303ddbd983a160f2cf71ac1775358a2e230cbd42ad617052427de8040b';
 export const login = async (req: AuthRequest, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -22,7 +22,7 @@ export const login = async (req: AuthRequest, res: Response) => {
     const employee = db.prepare('SELECT * FROM employees WHERE id = ?').get(user.employeeId) as Employee | undefined;
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, employeeId: user.employeeId },
-      JWT_SECRET,
+      jwtSecret,
       { expiresIn: '24h' }
     );
     return res.json({
