@@ -6,22 +6,6 @@
 
 ### (HRMS - Human Resource Management System)
 
----
-
-**Môn học:** Công Nghệ Phần Mềm
-
-**Giảng viên hướng dẫn:** _[Tên Giảng Viên]_
-
-**Sinh viên thực hiện:** _[Tên Sinh Viên]_
-
-**MSSV:** _[Mã Số Sinh Viên]_
-
-**Lớp:** _[Tên Lớp]_
-
----
-
-**Năm học 2025 - 2026**
-
 </div>
 
 ---
