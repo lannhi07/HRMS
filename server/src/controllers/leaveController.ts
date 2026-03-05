@@ -71,6 +71,10 @@ export const createLeaveRequest = (req: AuthRequest, res: Response) => {
     }
     const start = new Date(startDate);
     const end = new Date(endDate);
+    const today = new Date().toISOString().split('T')[0];
+    if (startDate < today) {
+      return res.status(400).json({ success: false, message: 'Không Thể Tạo Đơn Với Ngày Đã Qua' });
+    }
     if (start > end) {
       return res.status(400).json({ success: false, message: 'Ngày Bắt Đầu Phải Trước Ngày Kết Thúc' });
     }

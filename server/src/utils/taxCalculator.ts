@@ -1,13 +1,20 @@
+import { getConfigValue } from '../controllers/configController.js';
+const getInsuranceRates = () => ({
+  si: getConfigValue('siRate', 8),
+  hi: getConfigValue('hiRate', 1.5),
+  ui: getConfigValue('uiRate', 1),
+});
+const getPitBrackets = () => [
+  { limit: getConfigValue('pitBracket1Limit', 5000000), rate: getConfigValue('pitBracket1Rate', 5) / 100 },
+  { limit: getConfigValue('pitBracket2Limit', 10000000), rate: getConfigValue('pitBracket2Rate', 10) / 100 },
+  { limit: getConfigValue('pitBracket3Limit', 18000000), rate: getConfigValue('pitBracket3Rate', 15) / 100 },
+  { limit: getConfigValue('pitBracket4Limit', 32000000), rate: getConfigValue('pitBracket4Rate', 20) / 100 },
+  { limit: getConfigValue('pitBracket5Limit', 52000000), rate: getConfigValue('pitBracket5Rate', 25) / 100 },
+  { limit: getConfigValue('pitBracket6Limit', 80000000), rate: getConfigValue('pitBracket6Rate', 30) / 100 },
+  { limit: Infinity, rate: getConfigValue('pitBracket7Rate', 35) / 100 },
+];
 const calculatePit = (taxableIncome: number): number => {
-  const brackets = [
-    { limit: 5000000, rate: 0.05 },
-    { limit: 10000000, rate: 0.10 },
-    { limit: 18000000, rate: 0.15 },
-    { limit: 32000000, rate: 0.20 },
-    { limit: 52000000, rate: 0.25 },
-    { limit: 80000000, rate: 0.30 },
-    { limit: Infinity, rate: 0.35 }
-  ];
+  const brackets = getPitBrackets();
   let tax = 0;
   let remaining = taxableIncome;
   let previousLimit = 0;
@@ -21,7 +28,7 @@ const calculatePit = (taxableIncome: number): number => {
   return Math.round(tax);
 };
 const calculateInsurance = (baseSalary: number, rates: { si: number; hi: number; ui: number }) => {
-  const maxSalaryForInsurance = 36000000;
+  const maxSalaryForInsurance = getConfigValue('maxSalaryForInsurance', 36000000);
   const base = Math.min(baseSalary, maxSalaryForInsurance);
   return {
     socialInsurance: Math.round(base * (rates.si / 100)),
@@ -31,9 +38,10 @@ const calculateInsurance = (baseSalary: number, rates: { si: number; hi: number;
   };
 };
 export const calculateNetFromGross = (grossSalary: number, dependents: number = 0) => {
-  const insurance = calculateInsurance(grossSalary, { si: 8, hi: 1.5, ui: 1 });
-  const personalDeduction = 11000000;
-  const dependentDeduction = dependents * 4400000;
+  const rates = getInsuranceRates();
+  const insurance = calculateInsurance(grossSalary, rates);
+  const personalDeduction = getConfigValue('personalDeduction', 11000000);
+  const dependentDeduction = dependents * getConfigValue('dependentDeduction', 4400000);
   const taxableIncome = Math.max(0, grossSalary - insurance.total - personalDeduction - dependentDeduction);
   const pit = calculatePit(taxableIncome);
   return {

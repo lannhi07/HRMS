@@ -1,4 +1,5 @@
 import { AuthRequest } from '../middleware/auth.js';
+import { getConfigValue } from './configController.js';
 import { v4 as uuidv4 } from 'uuid';
 import { Response } from 'express';
 import db from '../database/connection.js';
@@ -28,10 +29,13 @@ export const createInsurance = (req: AuthRequest, res: Response) => {
     const existing = db.prepare('SELECT id FROM insurance WHERE employeeId = ?').get(employeeId);
     if (existing) return res.status(400).json({ success: false, message: 'Nhân Viên Đã Có Bảo Hiểm' });
     const id = uuidv4();
+    const siRate = getConfigValue('siRate', 8);
+    const hiRate = getConfigValue('hiRate', 1.5);
+    const uiRate = getConfigValue('uiRate', 1);
     db.prepare(`
       INSERT INTO insurance (id, employeeId, socialInsuranceNumber, healthInsuranceNumber, healthInsurancePlace, registrationDate, socialInsuranceRate, healthInsuranceRate, unemploymentInsuranceRate, baseSalaryForInsurance, status, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, ?, ?, 8, 1.5, 1, ?, 'active', ?, ?)
-    `).run(id, employeeId, socialInsuranceNumber, healthInsuranceNumber, healthInsurancePlace, registrationDate, baseSalaryForInsurance, now(), now());
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)
+    `).run(id, employeeId, socialInsuranceNumber, healthInsuranceNumber, healthInsurancePlace, registrationDate, siRate, hiRate, uiRate, baseSalaryForInsurance, now(), now());
     return res.status(201).json({ success: true, message: 'Tạo Bảo Hiểm Thành Công', data: { id } });
   } catch (error) {
     console.error('Lỗi Tạo Bảo Hiểm:', error);

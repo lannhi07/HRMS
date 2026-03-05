@@ -1,5 +1,5 @@
 'use client';
-import { LayoutDashboard, Users, Building2, Briefcase, Clock, CalendarDays, FileText, DollarSign, Shield, LogOut, User as UserIcon, Network } from 'lucide-react';
+import { LayoutDashboard, Users, Building2, Briefcase, Clock, CalendarDays, FileText, DollarSign, Shield, LogOut, User as UserIcon, Network, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -13,7 +13,8 @@ const navItems = [
   { href: '/leaveRequests', label: 'Đơn Xin Nghỉ', icon: CalendarDays },
   { href: '/contracts', label: 'Hợp Đồng', icon: FileText },
   { href: '/salaries', label: 'Bảng Lương', icon: DollarSign },
-  { href: '/insurance', label: 'Bảo Hiểm', icon: Shield, hrroOnly: true }
+  { href: '/insurance', label: 'Bảo Hiểm', icon: Shield, hrroOnly: true },
+  { href: '/config', label: 'Cấu Hình', icon: Settings, hrroOnly: true }
 ];
 export const Sidebar = () => {
   const pathname = usePathname();

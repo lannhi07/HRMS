@@ -1,12 +1,11 @@
 import { Attendance, PaginationQuery } from '../types/index.js';
 import { AuthRequest, canApprove } from '../middleware/auth.js';
 import { buildPagination, now } from '../utils/helpers.js';
+import { getConfigString, getConfigValue } from './configController.js';
 import { exportToExcel } from '../utils/exportHelper.js';
 import { v4 as uuidv4 } from 'uuid';
 import { Response } from 'express';
 import db from '../database/connection.js';
-const workStartTime = '08:30:00';
-const workEndTime = '17:30:00';
 const allowedSortFields = ['date', 'checkIn', 'checkOut', 'status', 'approvalStatus', 'createdAt'];
 export const getAttendance = (req: AuthRequest, res: Response) => {
   try {
@@ -71,6 +70,7 @@ export const checkIn = (req: AuthRequest, res: Response) => {
     if (existing?.checkIn) {
       return res.status(400).json({ success: false, message: 'Bạn Đã Chấm Công Vào Hôm Nay' });
     }
+    const workStartTime = getConfigString('workStartTime', '08:30') + ':00';
     let checkInLate = 0;
     if (currentTime > workStartTime) {
       const [h1, m1] = workStartTime.split(':').map(Number);
@@ -112,6 +112,7 @@ export const checkOut = (req: AuthRequest, res: Response) => {
     if (existing.checkOut) {
       return res.status(400).json({ success: false, message: 'Bạn Đã Chấm Công Ra Hôm Nay' });
     }
+    const workEndTime = getConfigString('workEndTime', '17:30') + ':00';
     let checkOutEarly = 0;
     if (currentTime < workEndTime) {
       const [h1, m1] = currentTime.split(':').map(Number);
@@ -120,7 +121,8 @@ export const checkOut = (req: AuthRequest, res: Response) => {
     }
     const [h1, m1] = existing.checkIn.split(':').map(Number);
     const [h2, m2] = currentTime.split(':').map(Number);
-    const workingMinutes = (h2 * 60 + m2) - (h1 * 60 + m1) - 60;
+    const lunchBreakMinutes = getConfigValue('lunchBreakMinutes', 60);
+    const workingMinutes = (h2 * 60 + m2) - (h1 * 60 + m1) - lunchBreakMinutes;
     const workingHours = Math.max(0, workingMinutes / 60);
     let overtimeHours = 0;
     if (currentTime > workEndTime) {

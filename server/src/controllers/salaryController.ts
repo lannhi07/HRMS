@@ -1,6 +1,7 @@
 import { calculateNetFromGross } from '../utils/taxCalculator.js';
 import { Salary, PaginationQuery } from '../types/index.js';
 import { buildPagination, now } from '../utils/helpers.js';
+import { getConfigValue } from './configController.js';
 import { exportToExcel } from '../utils/exportHelper.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { Response } from 'express';
@@ -101,7 +102,8 @@ export const calculateMonthlySalary = (req: AuthRequest, res: Response) => {
       `).get(emp.id, `${year}-${month.toString().padStart(2, '0')}-01`, `${year}-${month.toString().padStart(2, '0')}-01`) as { total: number };
       const workingDays = attendance.days || 0;
       const basicSalary = (emp.contractSalary || 0) * (workingDays / standardWorkingDays);
-      const overtimePay = ((emp.contractSalary || 0) / standardWorkingDays / 8) * 1.5 * (attendance.ot || 0);
+      const overtimeMultiplier = getConfigValue('overtimeMultiplier', 1.5);
+      const overtimePay = ((emp.contractSalary || 0) / standardWorkingDays / 8) * overtimeMultiplier * (attendance.ot || 0);
       const totalAllowances = allowances.total || 0;
       const grossSalary = basicSalary + overtimePay + totalAllowances;
       const calc = calculateNetFromGross(grossSalary);

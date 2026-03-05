@@ -268,13 +268,21 @@ const createTables = () => {
       createdAt TEXT NOT NULL,
       FOREIGN KEY (userId) REFERENCES users(id)
     );
-    CREATE INDEX IF NOT EXISTS idx_employees_department ON employees(departmentId);
-    CREATE INDEX IF NOT EXISTS idx_employees_manager ON employees(managerId);
-    CREATE INDEX IF NOT EXISTS idx_attendance_employee_date ON attendance(employeeId, date);
-    CREATE INDEX IF NOT EXISTS idx_leave_requests_employee ON leaveRequests(employeeId);
-    CREATE INDEX IF NOT EXISTS idx_salaries_employee_period ON salaries(employeeId, year, month);
-    CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(userId, isRead);
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON auditLogs(userId);
+    CREATE TABLE IF NOT EXISTS systemConfig (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      label TEXT NOT NULL,
+      description TEXT NOT NULL,
+      category TEXT NOT NULL,
+      updatedAt TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idxEmployeesDepartment ON employees(departmentId);
+    CREATE INDEX IF NOT EXISTS idxEmployeesManager ON employees(managerId);
+    CREATE INDEX IF NOT EXISTS idxAttendanceEmployeeDate ON attendance(employeeId, date);
+    CREATE INDEX IF NOT EXISTS idxLeaveRequestsEmployee ON leaveRequests(employeeId);
+    CREATE INDEX IF NOT EXISTS idxSalariesEmployeePeriod ON salaries(employeeId, year, month);
+    CREATE INDEX IF NOT EXISTS idxNotificationsUser ON notifications(userId, isRead);
+    CREATE INDEX IF NOT EXISTS idxAuditLogsUser ON auditLogs(userId);
   `);
   console.log('Khởi Tạo Cơ Sở Dữ Liệu Thành Công!');
 };
